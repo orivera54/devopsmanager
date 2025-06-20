@@ -70,4 +70,46 @@
   <div *ngIf="!isLoading && !error && !projectIdOrName" class="no-project-selected alert alert-warning">
     <p>Please select a project to view its dashboard.</p>
   </div>
+
+  <!-- Time Report Alerts Section -->
+  <section class="alerts-section card mt-4" *ngIf="!isLoading && projectIdOrName">
+    <div class="card-header">
+      <h3>
+        <!-- Basic icon placeholder, replace with actual icon library if available e.g. <i class="bi bi-clock-history"></i> -->
+        🕒 Time Report Alerts
+        <span *ngIf="isLoadingAlerts" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <span *ngIf="!isLoadingAlerts">({{ timeAlerts.length }})</span>
+      </h3>
+    </div>
+    <div class="card-body">
+      <div *ngIf="isLoadingAlerts" class="loading-indicator">Loading alerts...</div>
+      <div *ngIf="!isLoadingAlerts && timeAlerts.length === 0" class="no-alerts alert alert-success">
+        <p>
+          <!-- <i class="bi bi-check-circle-fill"></i> -->
+          ✅ No current time reporting alerts. Great job!
+        </p>
+      </div>
+      <ul *ngIf="!isLoadingAlerts && timeAlerts.length > 0" class="list-group list-group-flush">
+        <li *ngFor="let alert of timeAlerts" class="list-group-item alert-item">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">
+              <a (click)="navigateToWorkItem(alert.workItemId)" class="alert-link">
+                {{ alert.workItemType }} #{{ alert.workItemId }}: {{ alert.title }}
+              </a>
+            </h5>
+            <small class="text-muted">Changed: {{ alert.changedDate | date:'shortDate' }}</small>
+          </div>
+          <p class="mb-1 alert-message">
+            <!-- <i class="bi bi-exclamation-triangle-fill"></i> -->
+            ⚠️ {{ alert.alertMessage }}
+          </p>
+          <small class="text-muted">
+            State: <span class="badge state-badge state-{{alert.state?.toLowerCase().replace(' ', '-')}}">{{alert.state}}</span> |
+            Assigned to: {{ alert.assignedToDisplayName || 'Unassigned' }} |
+            Completed Work: {{ alert.completedWork ?? 'N/A' }}h
+          </small>
+        </li>
+      </ul>
+    </div>
+  </section>
 </div>

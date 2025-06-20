@@ -187,4 +187,33 @@ public class AzDevOpsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/projects/{projectOrTeamName}/workitems/time-alerts")
+    public ResponseEntity<List<com.example.azuredevopsdashboard.azdevops.dto.WorkItemTimeAlertDto>> getWorkItemTimeAlerts(
+            @PathVariable String projectOrTeamName,
+            @RequestParam(required = false, defaultValue = "Active,In Progress,Committed") List<String> states,
+            @RequestParam(required = false, defaultValue = "2") int daysThreshold // Placeholder, not fully used in service's WIQL yet
+    ) {
+        if (!StringUtils.hasText(projectOrTeamName)) {
+            logger.warn("Project/Team name path variable is missing for time alerts.");
+            return ResponseEntity.badRequest().build();
+        }
+        logger.info("Received request for time report alerts for project/team '{}'. States: {}, Days Threshold: {}",
+                    projectOrTeamName, states, daysThreshold);
+        try {
+            List<com.example.azuredevopsdashboard.azdevops.dto.WorkItemTimeAlertDto> alerts =
+                azDevOpsService.getTimeReportAlerts(projectOrTeamName, states, daysThreshold);
+
+            if (alerts.isEmpty()) {
+                logger.info("No time report alerts found for project/team '{}' with given criteria.", projectOrTeamName);
+                // Return 200 OK with empty list, or 204 No Content if preferred for "no data found"
+            } else {
+                logger.info("Returning {} time report alerts for project/team '{}'.", alerts.size(), projectOrTeamName);
+            }
+            return ResponseEntity.ok(alerts);
+        } catch (Exception e) {
+            logger.error("Error fetching time report alerts for project {}: {}", projectOrTeamName, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

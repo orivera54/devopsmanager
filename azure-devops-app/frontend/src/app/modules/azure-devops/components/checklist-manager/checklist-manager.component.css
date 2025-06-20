@@ -1,0 +1,212 @@
+/* checklist-manager.component.css */
+.checklist-manager {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f4f7f6; /* Light background for the whole manager */
+  border-radius: 4px;
+}
+
+.checklist-manager h4 {
+  margin-bottom: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.loading-indicator {
+  text-align: center;
+  padding: 15px;
+  color: #555;
+  font-style: italic;
+}
+.loading-indicator.small {
+  font-size: 0.9em;
+  padding: 5px;
+}
+
+.error-message {
+  /* Bootstrap .alert .alert-danger styling is assumed or define here */
+  margin-bottom: 15px;
+}
+
+.no-checklists, .no-items {
+  /* Bootstrap .alert .alert-info styling is assumed or define here */
+  font-style: italic;
+}
+.no-items {
+    color: #666;
+    padding: 0.75rem 1.25rem; /* Match list-group-item padding */
+}
+
+
+.add-checklist-form {
+  /* Bootstrap .card .mb-3 styling */
+  margin-bottom: 1rem;
+}
+.add-checklist-form .card-body {
+  padding: 1rem;
+}
+.add-checklist-form .card-title {
+  margin-bottom: 0.75rem;
+}
+.add-checklist-form .form-row { /* Using Bootstrap's grid idea */
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -5px;
+  margin-left: -5px;
+}
+.add-checklist-form .form-group {
+  padding-right: 5px;
+  padding-left: 5px;
+  margin-bottom: 1rem;
+}
+.add-checklist-form .col-md-6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+.add-checklist-form .form-control {
+  /* Basic styling, assuming Bootstrap form-control is available or defined elsewhere */
+  display: block;
+  width: 100%;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+}
+.add-checklist-form button {
+  /* Basic button styling */
+  margin-top: 10px; /* Space above button if inputs are full width */
+}
+
+
+.checklist-container {
+  /* Bootstrap .card .mb-3 styling */
+   margin-bottom: 1rem;
+}
+.checklist-header {
+  /* Bootstrap .card-header styling */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .75rem 1.25rem;
+  margin-bottom: 0;
+  background-color: rgba(0,0,0,.03);
+  border-bottom: 1px solid rgba(0,0,0,.125);
+}
+.checklist-header h5 {
+  margin-bottom: 0; /* Override Bootstrap default if any */
+  font-size: 1.1rem;
+}
+.checklist-header .created-info {
+    font-size: 0.75em;
+    color: #6c757d; /* text-muted */
+    margin-left: 10px;
+}
+
+.delete-checklist-btn {
+  /* Basic styling for delete button */
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.checklist-items-list {
+  /* Bootstrap .list-group .list-group-flush */
+   padding-left: 0;
+   margin-bottom: 0;
+}
+.checklist-item {
+  /* Bootstrap .list-group-item .d-flex .justify-content-between .align-items-center */
+  cursor: pointer; /* Indicate items are clickable */
+  transition: background-color 0.2s ease-in-out;
+}
+.checklist-item:hover {
+  background-color: #f0f8ff; /* Light blue on hover */
+}
+.checklist-item.completed .item-text {
+  text-decoration: line-through;
+  color: #888;
+}
+.checklist-item .item-checkbox {
+  margin-right: 10px;
+  width: 1.1em; /* Slightly larger checkboxes */
+  height: 1.1em;
+  vertical-align: middle;
+}
+.checklist-item .item-text {
+  flex-grow: 1;
+  vertical-align: middle;
+}
+.checklist-item .item-order-info {
+    font-size: 0.75em;
+    color: #aaa;
+    margin-left: 10px;
+}
+.delete-item-btn {
+  /* Basic styling */
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.add-item-form {
+  /* Bootstrap .card-footer styling */
+  padding: .75rem 1.25rem;
+  background-color: rgba(0,0,0,.03);
+  border-top: 1px solid rgba(0,0,0,.125);
+}
+.add-item-form .input-group {
+  /* Bootstrap .input-group styling */
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  width: 100%;
+}
+.add-item-form .input-group > .form-control {
+  position: relative;
+  flex: 1 1 auto;
+  width: 1%;
+  min-width: 0;
+  margin-bottom: 0;
+}
+.add-item-form .input-group > .form-control + .input-group-append > .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.add-item-form .input-group-append {
+  display: flex;
+  margin-left: -1px; /* Overlap borders */
+}
+.add-item-form .input-group-append .btn {
+  position: relative;
+  z-index: 2;
+}
+
+/* General Bootstrap button styles if not globally available */
+.btn { display: inline-block; font-weight: 400; text-align: center; white-space: nowrap; vertical-align: middle; user-select: none; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
+.btn-sm { padding: .25rem .5rem; font-size: .875rem; line-height: 1.5; border-radius: .2rem; }
+.btn-primary { color: #fff; background-color: #007bff; border-color: #007bff; }
+.btn-primary:disabled { background-color: #6c757d; border-color: #6c757d; }
+.btn-danger { color: #fff; background-color: #dc3545; border-color: #dc3545; }
+.btn-success { color: #fff; background-color: #28a745; border-color: #28a745; }
+.btn-outline-danger { color: #dc3545; border-color: #dc3545; background-color: transparent; }
+.btn-outline-danger:hover { color: #fff; background-color: #dc3545; border-color: #dc3545; }
+
+.mr-2 { margin-right: .5rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.text-muted { color: #6c757d !important; }
+.alert { padding: .75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: .25rem; }
+.alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+.alert-info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
+.card { /* ... */ }
+.card-body { /* ... */ }
+.card-header { /* ... */ }
+.card-footer { /* ... */ }
+.list-group { /* ... */ }
+.list-group-item { /* ... */ }
+.list-group-flush .list-group-item { /* ... */ }
+.d-flex { /* ... */ }
+.justify-content-between { /* ... */ }
+.align-items-center { /* ... */ }
