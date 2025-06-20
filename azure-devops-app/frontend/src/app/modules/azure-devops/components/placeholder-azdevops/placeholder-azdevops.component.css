@@ -1,0 +1,5 @@
+/* Styles for PlaceholderAzdevopsComponent if needed */
+:host {
+  display: block;
+  padding: 1em;
+}

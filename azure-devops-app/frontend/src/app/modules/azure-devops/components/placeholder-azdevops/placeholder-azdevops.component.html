@@ -1,0 +1,14 @@
+<div class="azdevops-module-layout">
+  <header class="module-header">
+    <h1>Azure DevOps Dashboard</h1>
+    <nav class="module-nav">
+      <a routerLink="projects" routerLinkActive="active-link">Projects</a>
+      <!-- Add other top-level navigation links for this module here as needed -->
+      <!-- e.g., <a routerLink="queries" routerLinkActive="active-link">My Queries</a> -->
+    </nav>
+  </header>
+  <hr>
+  <main class="module-content">
+    <router-outlet></router-outlet> <!-- Child routes (ProjectListComponent, WorkItemListComponent, etc.) render here -->
+  </main>
+</div>

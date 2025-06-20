@@ -1,0 +1,75 @@
+<div class="work-item-list-container">
+  <h2 *ngIf="projectIdOrName">Work Items for Project: {{ projectIdOrName }}</h2>
+  <h2 *ngIf="!projectIdOrName && !isLoading && error" class="error-message">Error: {{error}}</h2>
+  <h2 *ngIf="!projectIdOrName && !isLoading && !error">No Project Selected or ID/Name missing in URL.</h2>
+
+  <div class="filters card mb-3" *ngIf="projectIdOrName">
+    <div class="card-body">
+      <h5 class="card-title">Filters</h5>
+      <div class="form-row">
+        <div class="form-group col-md-3">
+          <label for="filterState">State</label>
+          <input type="text" class="form-control" id="filterState" [(ngModel)]="filterState" name="filterState" (keyup.enter)="applyFilters()" placeholder="e.g., Active">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="filterType">Type</label>
+          <input type="text" class="form-control" id="filterType" [(ngModel)]="filterType" name="filterType" (keyup.enter)="applyFilters()" placeholder="e.g., User Story">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="filterAssignedTo">Assigned To</label>
+          <input type="text" class="form-control" id="filterAssignedTo" [(ngModel)]="filterAssignedTo" name="filterAssignedTo" (keyup.enter)="applyFilters()" placeholder="User email or name">
+        </div>
+        <div class="form-group col-md-3 d-flex align-items-end">
+          <button (click)="applyFilters()" class="btn btn-primary mr-2">Apply</button>
+          <button (click)="clearFilters()" class="btn btn-secondary clear-button">Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Loading work items...</p>
+  </div>
+
+  <div *ngIf="!isLoading && error" class="error-message alert alert-danger">
+    <p style="white-space: pre-wrap;">{{ error }}</p>
+  </div>
+
+  <div *ngIf="!isLoading && !error && workItems.length > 0" class="table-responsive">
+    <table class="work-item-table table table-striped table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th>ID</th>
+          <th>Type</th>
+          <th>Title</th>
+          <th>State</th>
+          <th>Assigned To</th>
+          <th>Changed Date</th> {/* Changed from Created Date */}
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of workItems">
+          <td>
+            <a *ngIf="item._links?.html?.href" [href]="item._links.html.href" target="_blank" rel="noopener noreferrer" title="View in Azure DevOps">
+              {{ item.id }}
+            </a>
+            <span *ngIf="!item._links?.html?.href">{{ item.id }}</span>
+          </td>
+          <td>{{ item.fields && item.fields['System.WorkItemType'] || 'N/A' }}</td>
+          <td>{{ item.fields && item.fields['System.Title'] || 'N/A' }}</td>
+          <td>{{ item.fields && item.fields['System.State'] || 'N/A' }}</td>
+          <td>{{ (item.fields && item.fields['System.AssignedTo']?.displayName) || 'Unassigned' }}</td>
+          <td>{{ (item.fields && item.fields['System.ChangedDate'] | date:'medium') || 'N/A' }}</td> {/* Changed to ChangedDate and format */}
+          <td>
+            <button class="btn btn-sm btn-info" (click)="navigateToDetail(item.id)">View Details</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!isLoading && !error && workItems.length === 0 && projectIdOrName" class="no-work-items-message alert alert-info">
+    <p>No work items found for this project or matching your current filters.</p>
+  </div>
+</div>

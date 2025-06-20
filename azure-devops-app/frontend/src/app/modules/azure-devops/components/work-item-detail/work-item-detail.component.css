@@ -1,0 +1,154 @@
+/* work-item-detail.component.css */
+.work-item-detail-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.detail-header h1 {
+  margin: 0;
+  font-size: 1.8em;
+  display: flex;
+  align-items: center;
+}
+.work-item-type {
+  background-color: #0078d4;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7em;
+  margin-right: 10px;
+  text-transform: uppercase;
+}
+
+
+.detail-header .actions button {
+  margin-left: 10px;
+}
+
+.back-button {
+  margin-right: 15px;
+}
+
+.view-mode, .edit-mode {
+  margin-top: 20px;
+}
+
+.view-mode p, .edit-mode .form-field {
+  margin-bottom: 10px;
+}
+
+.description-content {
+  border: 1px solid #eee;
+  padding: 10px;
+  min-height: 80px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+.description-content img { /* Basic responsive images */
+  max-width: 100%;
+  height: auto;
+}
+
+
+.edit-mode .form-field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.edit-mode input[type="text"],
+.edit-mode input[type="number"],
+.edit-mode select,
+.edit-mode textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.edit-mode textarea {
+  min-height: 120px;
+}
+
+.comments-section {
+  margin-top: 30px;
+}
+.comments-section h3{
+  margin-bottom: 15px;
+}
+
+.comment-item {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+.comment-item:last-child {
+  border-bottom: none;
+}
+.comment-text img { /* Basic responsive images for comments */
+    max-width: 100%;
+    height: auto;
+}
+
+
+.loading-indicator, .error-message {
+  text-align: center;
+  padding: 20px;
+}
+
+/* Using Bootstrap-like classes for structure and alerts, ensure these are globally available or defined */
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+    margin-bottom: 1rem;
+}
+.card-body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+}
+.card-title {
+    margin-bottom: .75rem;
+}
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+.mt-3 { margin-top: 1rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.pb-3 { padding-bottom: 1rem !important; }
+.list-unstyled { padding-left: 0; list-style: none; }
+.text-muted { color: #6c757d !important; }
+
+.form-group { margin-bottom: 1rem; }
+.form-row { display: flex; flex-wrap: wrap; margin-right: -5px; margin-left: -5px; }
+.form-row > .col-md-6, .form-row > .col-md-4 { position: relative; width: 100%; padding-right: 5px; padding-left: 5px; }
+@media (min-width: 768px) {
+    .col-md-3 { flex: 0 0 25%; max-width: 25%; }
+    .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+    .col-md-6 { flex: 0 0 50%; max-width: 50%; }
+    .d-flex { display: flex !important; }
+    .align-items-end { align-items: flex-end !important; }
+}
+.form-control { display: block; width: 100%; /* ... other styles from previous component */ }
+.btn { /* ... */ }
+.btn-sm { /* ... */ }
+.btn-primary, .btn-success, .btn-secondary, .btn-outline-secondary { /* ... */ }
+.text-danger { color: #dc3545 !important; }
+.small { font-size: 80%; font-weight: 400; }
+.alert { /* ... */ }
+.alert-danger { /* ... */ }
+.alert-info { /* ... */ }

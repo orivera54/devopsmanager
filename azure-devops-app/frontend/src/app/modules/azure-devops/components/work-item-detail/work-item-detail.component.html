@@ -1,0 +1,149 @@
+<div class="work-item-detail-container">
+  <ng-container *ngIf="workItem; else loadingOrErrorView">
+    <header class="detail-header">
+      <button (click)="goBack()" class="btn btn-sm btn-outline-secondary back-button">&larr; Back</button>
+      <h1>
+        <span class="work-item-type">{{ workItem.fields && workItem.fields['System.WorkItemType'] }}</span>
+        #{{ workItem.id }}:
+        <span *ngIf="!isEditing">{{ workItem.fields && workItem.fields['System.Title'] }}</span>
+      </h1>
+      <div class="actions">
+        <button class="btn btn-sm btn-primary" (click)="toggleEdit()" *ngIf="!isEditing">Edit</button>
+        <button class="btn btn-sm btn-success" (click)="saveChanges()" *ngIf="isEditing" [disabled]="!workItemForm.valid || isLoading">
+          {{ isLoading ? 'Saving...' : 'Save Changes' }}
+        </button>
+        <button class="btn btn-sm btn-secondary" (click)="toggleEdit()" *ngIf="isEditing" [disabled]="isLoading">Cancel</button>
+      </div>
+    </header>
+    <hr>
+
+    <div *ngIf="error" class="alert alert-danger error-message" style="white-space: pre-wrap;">{{ error }}</div>
+
+    <!-- View Mode -->
+    <section *ngIf="!isEditing" class="view-mode card">
+      <div class="card-body">
+        <h3 class="card-title" *ngIf="isEditing">{{ workItem.fields && workItem.fields['System.Title'] }}</h3>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>State:</strong> {{ workItem.fields && workItem.fields['System.State'] }}
+              <span *ngIf="workItem.fields && workItem.fields['System.Reason']">({{ workItem.fields['System.Reason'] }})</span></p>
+            <p><strong>Assigned To:</strong> {{ (workItem.fields && workItem.fields['System.AssignedTo']?.displayName) || 'Unassigned' }}</p>
+            <p><strong>Priority:</strong> {{ (workItem.fields && workItem.fields['Microsoft.VSTS.Common.Priority']) || 'N/A' }}</p>
+            <p><strong>Area Path:</strong> {{ (workItem.fields && workItem.fields['System.AreaPath']) || 'N/A' }}</p>
+            <p><strong>Iteration Path:</strong> {{ (workItem.fields && workItem.fields['System.IterationPath']) || 'N/A' }}</p>
+          </div>
+          <div class="col-md-6">
+            <h4>Estimates:</h4>
+            <p>Original: {{ (workItem.fields && workItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate']) ?? 'N/A' }}h</p>
+            <p>Completed: {{ (workItem.fields && workItem.fields['Microsoft.VSTS.Scheduling.CompletedWork']) ?? 'N/A' }}h</p>
+            <p>Remaining: {{ (workItem.fields && workItem.fields['Microsoft.VSTS.Scheduling.RemainingWork']) ?? 'N/A' }}h</p>
+          </div>
+        </div>
+
+        <h4>Description:</h4>
+        <div [innerHTML]="(workItem.fields && (workItem.fields['System.DescriptionHtml'] || workItem.fields['System.Description'])) | safeHtml" class="description-content card card-body bg-light"></div>
+
+        <div class="metadata mt-3">
+            <p><small>Created by: {{ workItem.fields && workItem.fields['System.CreatedBy']?.displayName }} on {{ workItem.fields && workItem.fields['System.CreatedDate'] | date:'medium' }}</small></p>
+            <p><small>Last changed by: {{ workItem.fields && workItem.fields['System.ChangedBy']?.displayName }} on {{ workItem.fields && workItem.fields['System.ChangedDate'] | date:'medium' }}</small></p>
+            <p><small>Revision: {{ workItem.rev }}</small></p>
+            <p *ngIf="workItem.url"><small><a [href]="workItem.url" target="_blank" rel="noopener noreferrer">API URL</a></small></p>
+            <p *ngIf="workItem._links?.html?.href"><small><a [href]="workItem._links.html.href" target="_blank" rel="noopener noreferrer">View in Azure DevOps</a></small></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Edit Mode -->
+    <section *ngIf="isEditing" class="edit-mode card">
+      <form [formGroup]="workItemForm" (ngSubmit)="saveChanges()" class="card-body">
+        <div class="form-group">
+          <label for="title">Title:</label>
+          <input id="title" formControlName="title" class="form-control">
+          <div *ngIf="workItemForm.get('title')?.invalid && workItemForm.get('title')?.touched" class="text-danger small">Title is required.</div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="state">State:</label>
+              <select id="state" formControlName="state" class="form-control">
+                <option *ngFor="let stateOp of availableStates" [value]="stateOp">{{ stateOp }}</option>
+              </select>
+            </div>
+            <div class="form-group col-md-6" *ngIf="workItemForm.get('state')?.value">
+              <label for="reason">Reason:</label>
+              <select id="reason" formControlName="reason" class="form-control">
+                <option value="">-- Select Reason --</option>
+                <option *ngFor="let reasonOp of getReasonsForState(workItemForm.get('state')?.value)" [value]="reasonOp">{{ reasonOp }}</option>
+              </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+          <label for="assignedTo">Assigned To (Unique Name or Email):</label>
+          <input id="assignedTo" formControlName="assignedTo" class="form-control" placeholder="e.g., user@example.com or empty to unassign">
+        </div>
+
+        <div class="form-group">
+          <label for="priority">Priority (1-4):</label>
+          <input type="number" id="priority" formControlName="priority" class="form-control">
+           <div *ngIf="workItemForm.get('priority')?.invalid && workItemForm.get('priority')?.touched" class="text-danger small">Priority must be between 1 and 4.</div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="originalEstimate">Original Estimate (h):</label>
+              <input type="number" id="originalEstimate" formControlName="originalEstimate" class="form-control">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="remainingWork">Remaining Work (h):</label>
+              <input type="number" id="remainingWork" formControlName="remainingWork" class="form-control">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="completedWork">Completed Work (h):</label>
+              <input type="number" id="completedWork" formControlName="completedWork" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description (HTML or Markdown supported by Azure DevOps):</label>
+          <textarea id="description" formControlName="description" rows="10" class="form-control"></textarea>
+        </div>
+
+        <!-- Save/Cancel buttons are in the header -->
+      </form>
+    </section>
+
+    <!-- Comments Section -->
+    <section class="comments-section card mt-3" *ngIf="comments.length > 0">
+      <div class="card-body">
+        <h3 class="card-title">Comments ({{ comments.length }})</h3>
+        <ul class="list-unstyled">
+          <li *ngFor="let comment of comments" class="comment-item mb-3 pb-3 border-bottom">
+            <div [innerHTML]="comment.renderedText || comment.text | safeHtml" class="comment-text"></div>
+            <small class="text-muted">
+              By: {{ comment.createdBy?.displayName || 'Unknown User' }}
+              on {{ comment.createdDate | date:'medium' }}
+              <span *ngIf="comment.modifiedDate && comment.modifiedDate !== comment.createdDate">
+                (Modified: {{ comment.modifiedDate | date:'medium' }} by {{ comment.modifiedBy?.displayName || 'Unknown User'}})
+              </span>
+            </small>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <div *ngIf="!isLoading && comments.length === 0" class="alert alert-info mt-3">No comments yet on this work item.</div>
+
+  </ng-container>
+
+  <ng-template #loadingOrErrorView>
+    <div *ngIf="isLoading" class="loading-indicator mt-5">
+      <p>Loading work item details...</p>
+      <!-- Add spinner here -->
+    </div>
+    <div *ngIf="error && !isLoading" class="error-message alert alert-danger mt-5">
+      <p>{{ error }}</p>
+      <button (click)="goBack()" class="btn btn-sm btn-secondary">Go Back</button>
+    </div>
+  </ng-template>
+</div>
