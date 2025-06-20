@@ -6,19 +6,25 @@ import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { WorkItemTimeAlert } from '../../models/azdevops.models'; // Import WorkItemTimeAlert
+import { Router, RouterModule } from '@angular/router'; // Import Router and RouterModule
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective],
+  imports: [CommonModule, BaseChartDirective, RouterModule], // Added RouterModule
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   projectIdOrName: string | null = null;
-  workItems: AzDevOpsWorkItem[] = [];
-  isLoading = true;
+  workItems: AzDevOpsWorkItem[] = []; // For general dashboard metrics based on work items
+  isLoading = true; // General loading for primary dashboard data
   error: string | null = null;
+
+  // Time Alerts specific properties
+  timeAlerts: WorkItemTimeAlert[] = [];
+  isLoadingAlerts = false;
 
   // Metrics
   totalEstimatedHours: number = 0;
@@ -66,16 +72,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private azureDevopsService: AzureDevopsService
+    private azureDevopsService: AzureDevopsService,
+    private router: Router // Injected Router
   ) {}
 
   ngOnInit(): void {
     this.routeSub = this.route.paramMap.subscribe(params => {
       this.projectIdOrName = params.get('projectIdOrName');
       if (this.projectIdOrName) {
-        this.loadDashboardData();
+        this.loadDashboardData(); // Loads main metrics and charts
+        this.loadTimeAlerts();    // Loads time alerts separately
       } else {
-        this.isLoading = false;
+        this.isLoading = false; // Ensure general isLoading is false
+        this.isLoadingAlerts = false; // And alerts loading
         this.error = 'Project ID or Name not provided in route. Cannot load dashboard.';
         console.warn(this.error);
       }
@@ -85,6 +94,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.routeSub?.unsubscribe();
     this.workItemsSub?.unsubscribe();
+    // Remember to unsubscribe from timeAlertsSub if you add it
   }
 
   loadDashboardData(): void {
@@ -165,5 +175,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public chartHovered({ event, active }: { event?: ChartEvent, active?: {}[] }): void {
     // console.log('Chart Hovered', event, active);
+  }
+
+  loadTimeAlerts(): void {
+    if (!this.projectIdOrName) return;
+    this.isLoadingAlerts = true;
+    // Default states for alerts, could be configurable
+    const defaultStatesForAlerts = ['Active', 'In Progress', 'Committed'];
+    // daysThreshold is optional in service, not passing it here to use service default or backend default
+    this.azureDevopsService.getTimeReportAlerts(this.projectIdOrName, defaultStatesForAlerts).subscribe({
+      next: (alerts) => {
+        this.timeAlerts = alerts;
+        this.isLoadingAlerts = false;
+      },
+      error: (err) => {
+        console.error('Failed to load time alerts for project ' + this.projectIdOrName, err);
+        // Display a specific error for this section or log it, but don't block the main dashboard
+        // this.error = 'Failed to load time alerts.'; // Or a more specific error display area
+        this.isLoadingAlerts = false;
+      }
+    });
+  }
+
+  navigateToWorkItem(workItemId: number): void {
+    // Navigate to the work item detail page
+    this.router.navigate(['/azure-devops', 'workitems', 'detail', workItemId]);
   }
 }

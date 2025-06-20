@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { AzDevOpsProject, AzDevOpsWorkItem, AzDevOpsComment, UpdateWorkItemPayload } from '../models/azdevops.models';
+import { AzDevOpsProject, AzDevOpsWorkItem, AzDevOpsComment, UpdateWorkItemPayload, WorkItemTimeAlert } from '../models/azdevops.models'; // Added WorkItemTimeAlert
 
 @Injectable({
   providedIn: 'root'
@@ -56,5 +56,16 @@ export class AzureDevopsService {
       params = params.set('expand', expand);
     }
     return this.http.get<AzDevOpsComment[]>(`${this.apiUrl}/workitems/${workItemId}/comments`, { params });
+  }
+
+  getTimeReportAlerts(projectIdOrName: string, states?: string[], daysThreshold?: number): Observable<WorkItemTimeAlert[]> {
+    let params = new HttpParams();
+    if (states && states.length > 0) {
+      params = params.set('states', states.join(','));
+    }
+    if (daysThreshold !== undefined && daysThreshold !== null) { // Ensure daysThreshold can be 0
+      params = params.set('daysThreshold', daysThreshold.toString());
+    }
+    return this.http.get<WorkItemTimeAlert[]>(`${this.apiUrl}/projects/${projectIdOrName}/workitems/time-alerts`, { params });
   }
 }

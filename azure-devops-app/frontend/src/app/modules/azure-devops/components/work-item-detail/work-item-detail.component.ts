@@ -5,12 +5,19 @@ import { AzDevOpsWorkItem, AzDevOpsComment, AzDevOpsUserReference, UpdateWorkIte
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { SafeHtmlPipe } from '../../../../pipes/safe-html.pipe'; // Adjusted path
+import { SafeHtmlPipe } from '../../../../pipes/safe-html.pipe';
+import { ChecklistManagerComponent } from '../checklist-manager/checklist-manager.component'; // Import ChecklistManager
 
 @Component({
   selector: 'app-work-item-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, SafeHtmlPipe], // Added SafeHtmlPipe
+  imports: [
+    CommonModule,
+    RouterModule,
+    ReactiveFormsModule,
+    SafeHtmlPipe,
+    ChecklistManagerComponent // Add ChecklistManagerComponent here
+  ],
   templateUrl: './work-item-detail.component.html',
   styleUrls: ['./work-item-detail.component.css']
 })
@@ -39,7 +46,12 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
     'Closed': ['Accepted', 'Closed', 'Resolved as duplicate', 'Resolved as by design'],
     'Removed': ['Removed from backlog']
   };
-  // availableTypes: string[] = ['User Story', 'Task', 'Bug', 'Epic', 'Feature']; // Not directly editable usually
+  // availableTypes: string[] = ['User Story', 'Task', 'Bug', 'Epic', 'Feature'];
+
+  // Placeholder for organization name. This needs a proper way to be set,
+  // e.g., from a global config service, route data, or fetched with project details.
+  // For now, using a placeholder that developers must configure or enhance.
+  public currentOrganization: string = "YOUR_AZDO_ORG_PLACEHOLDER"; // TODO: Replace with actual org name source
 
   constructor(
     private route: ActivatedRoute,
@@ -192,11 +204,21 @@ export class WorkItemDetailComponent implements OnInit, OnDestroy {
 
   goBack(): void {
     // Navigate back to the work item list, trying to preserve project context if possible
-    const projectId = this.workItem?.fields["System.TeamProject"] || this.route.snapshot.paramMap.get('projectIdOrName'); // Fallback
-    if (projectId) {
-      this.router.navigate(['/azure-devops/projects', projectId, 'workitems']);
-    } else {
-      this.router.navigate(['/azure-devops/projects']); // Default fallback
+    const teamProject = this.workItem?.fields && this.workItem.fields["System.TeamProject"];
+    // If the detail page was reached from a project-specific work item list,
+    // this.route.parent might give access to 'projectIdOrName' from that route.
+    // Example: /azure-devops/projects/MyProject/workitems -> detail page.
+    // A more robust solution might involve a navigation service or passing more context via route data.
+    const projectIdFromRoute = this.route.snapshot.paramMap.get('projectIdOrName'); // Check if it was part of a parent route
+
+    if (teamProject) { // teamProject is usually the project name or GUID
+      this.router.navigate(['/azure-devops/projects', teamProject, 'workitems']);
+    } else if (projectIdFromRoute) {
+      this.router.navigate(['/azure-devops/projects', projectIdFromRoute, 'workitems']);
+    }
+    else {
+      // Fallback if project context cannot be determined
+      this.router.navigate(['/azure-devops/projects']);
     }
   }
 }

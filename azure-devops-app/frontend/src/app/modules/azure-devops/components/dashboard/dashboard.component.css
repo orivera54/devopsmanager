@@ -112,3 +112,105 @@
 .alert-info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
 .alert-warning { color: #856404; background-color: #fff3cd; border-color: #ffeeba; }
 .mb-4 { margin-bottom: 1.5rem !important; }
+
+/* Alerts Section Styles */
+.alerts-section {
+  margin-top: 30px;
+}
+.alerts-section .card-header h3 {
+  color: #856404; /* Bootstrap warning text color */
+  margin-bottom: 0; /* Remove default margin from h3 inside card-header */
+  font-size: 1.25rem;
+}
+.alerts-section .card-header h3 .spinner-border { /* For loading spinner */
+  width: 1rem;
+  height: 1rem;
+  border-width: .2em;
+  vertical-align: text-bottom;
+}
+
+.no-alerts p {
+  /* color: #155724; */ /* Bootstrap success text color */
+  /* background-color: #d4edda; */ /* Bootstrap success background */
+  /* border-color: #c3e6cb; */
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 0; /* Remove margin if it's the only content */
+}
+.no-alerts p i { /* For icon before message */
+  margin-right: 5px;
+  /* color: green; */ /* Or use Bootstrap success color variable */
+}
+
+.alert-item {
+  padding: 10px 15px;
+  /* border-bottom: 1px solid #eee; Remove if using list-group-flush */
+  background-color: #fff;
+  margin-bottom: 0; /* list-group-flush handles spacing */
+  border-left: 5px solid #ffc107; /* Bootstrap warning color for alert strip */
+}
+/* .alert-item:last-child { border-bottom: none; } */ /* Not needed with list-group-flush */
+
+.alert-item strong { font-size: 1.05em; }
+.alert-item .alert-link {
+  cursor: pointer;
+  color: #0056b3; /* Darker blue for links */
+  text-decoration: none;
+}
+.alert-item .alert-link:hover {
+  color: #003d80;
+  text-decoration: underline;
+}
+.alert-item small.text-muted {
+  color: #6c757d !important; /* Bootstrap text-muted */
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+}
+.alert-item .alert-message {
+  margin-top: 8px;
+  margin-bottom: 5px;
+  font-style: italic;
+  color: #721c24; /* Bootstrap danger text color for alert message */
+  font-size: 0.9rem;
+}
+.alert-item .alert-message i { /* For icon in message */
+  color: #dc3545; /* Bootstrap danger color */
+  margin-right: 5px;
+}
+
+/* State Badges - simple visual cues */
+.badge {
+  display: inline-block;
+  padding: .3em .5em; /* Slightly adjusted padding */
+  font-size: 70%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25rem;
+  margin-left: 5px;
+}
+.state-badge { color: #fff; } /* Default text color for badges */
+.state-active, .state-in-progress, .state-committed { background-color: #007bff; } /* Blue */
+.state-new, .state-proposed { background-color: #6c757d; } /* Grey */
+.state-resolved { background-color: #ffc107; } /* Amber/Orange for Resolved (often needs action) */
+.state-closed, .state-done { background-color: #28a745; } /* Green for truly done states */
+.state-removed { background-color: #dc3545; } /* Red */
+.state-unknown { background-color: #adb5bd; } /* Light grey for unknown */
+
+/* Bootstrap utility classes (if not using Bootstrap globally) */
+.list-group-flush .list-group-item { border-right-width: 0; border-left-width: 0; border-radius: 0; }
+.list-group-flush .list-group-item:first-child { border-top-width: 0; }
+.list-group-flush:last-child .list-group-item:last-child { border-bottom-width: 0; }
+.list-group-item { position: relative; display: block; padding: .75rem 1.25rem; background-color: #fff; border: 1px solid rgba(0,0,0,.125); }
+.d-flex { display: flex !important; }
+.w-100 { width: 100% !important; }
+.justify-content-between { justify-content: space-between !important; }
+.mb-1 { margin-bottom: .25rem !important; }
+.mt-4 { margin-top: 1.5rem !important; }
+.spinner-border { display: inline-block; width: 2rem; height: 2rem; vertical-align: text-bottom; border: .25em solid currentColor; border-right-color: transparent; border-radius: 50%; -webkit-animation: spinner-border .75s linear infinite; animation: spinner-border .75s linear infinite; }
+.spinner-border-sm { width: 1rem; height: 1rem; border-width: .2em; }
+@-webkit-keyframes spinner-border { to { transform: rotate(360deg); } }
+@keyframes spinner-border { to { transform: rotate(360deg); } }

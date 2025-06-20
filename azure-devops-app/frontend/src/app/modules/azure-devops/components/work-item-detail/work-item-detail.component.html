@@ -136,6 +136,20 @@
 
   </ng-container>
 
+  <!-- Checklist Manager Section -->
+  <section class="checklists-section card mt-4" *ngIf="workItem && workItem.id && workItem.fields">
+    <div class="card-header">
+      <h3>Checklists</h3>
+    </div>
+    <div class="card-body">
+      <app-checklist-manager
+        [azureDevopsOrganization]="currentOrganization"
+        [azureDevopsProjectName]="workItem.fields['System.TeamProject'] || ''"
+        [azureDevopsWorkItemId]="workItem.id">
+      </app-checklist-manager>
+    </div>
+  </section>
+
   <ng-template #loadingOrErrorView>
     <div *ngIf="isLoading" class="loading-indicator mt-5">
       <p>Loading work item details...</p>

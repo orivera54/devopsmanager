@@ -1,0 +1,71 @@
+<div class="checklist-manager">
+  <h4>Checklists for Work Item #{{ azureDevopsWorkItemId || 'N/A' }}</h4>
+
+  <div *ngIf="isLoading && !checklists.length" class="loading-indicator">Loading checklists...</div>
+  <div *ngIf="error" class="error-message alert alert-danger">{{ error }}</div>
+
+  <div class="add-checklist-form card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Create New Checklist</h5>
+      <form [formGroup]="newChecklistForm" (ngSubmit)="createChecklist()">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="newChecklistName">Name</label>
+            <input type="text" id="newChecklistName" class="form-control" formControlName="name" placeholder="Checklist Name">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="newChecklistDesc">Description (Optional)</label>
+            <input type="text" id="newChecklistDesc" class="form-control" formControlName="description" placeholder="Optional Description">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm" [disabled]="newChecklistForm.invalid || isLoading">
+          {{ isLoading ? 'Adding...' : 'Add Checklist' }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && checklists.length === 0 && !error" class="no-checklists alert alert-info">
+    No checklists found for this work item. Create one above!
+  </div>
+
+  <div *ngFor="let checklist of checklists" class="checklist-container card mb-3">
+    <div class="checklist-header card-header">
+      <h5 class="mb-0">
+        {{ checklist.name }}
+        <small *ngIf="checklist.description" class="text-muted"> - {{ checklist.description }}</small>
+        <span class="text-muted created-info">(Created: {{ checklist.createdAt | date:'short' }} by {{ checklist.createdByUsername || 'Unknown' }})</span>
+      </h5>
+      <button (click)="deleteChecklist(checklist.id, $event)" class="btn btn-sm btn-danger delete-checklist-btn" title="Delete Checklist">&times;</button>
+    </div>
+
+    <ul class="list-group list-group-flush checklist-items-list">
+      <li *ngFor="let item of checklist.items"
+          [class.completed]="item.isCompleted"
+          class="list-group-item checklist-item d-flex justify-content-between align-items-center"
+          (click)="toggleItemCompletion(item, checklist.id)">
+        <div class="item-content">
+          <input type="checkbox" [checked]="item.isCompleted" (click)="$event.stopPropagation()" class="mr-2 item-checkbox">
+          <span class="item-text">{{ item.itemText }}</span>
+          <!-- <small class="text-muted item-order-info">(Order: {{item.itemOrder}})</small> -->
+        </div>
+        <button (click)="deleteChecklistItem(checklist.id, item.id, $event)" class="btn btn-sm btn-outline-danger delete-item-btn" title="Delete Item">&times;</button>
+      </li>
+      <li *ngIf="checklist.items.length === 0" class="list-group-item no-items">No items in this checklist yet.</li>
+    </ul>
+
+    <div class="add-item-form card-footer" [formGroup]="newChecklistItemForms[checklist.id]">
+      <div class="input-group">
+        <input type="text" class="form-control form-control-sm" formControlName="itemText" placeholder="New item text" (keyup.enter)="addChecklistItem(checklist.id)">
+        <!-- Optional order input, can be hidden if auto-calculated -->
+        <!-- <input type="number" class="form-control form-control-sm" style="max-width: 70px;" formControlName="itemOrder" title="Order"> -->
+        <div class="input-group-append">
+          <button class="btn btn-success btn-sm" (click)="addChecklistItem(checklist.id)" [disabled]="newChecklistItemForms[checklist.id]?.invalid || isLoading">
+            {{ isLoading ? 'Adding...' : 'Add Item' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="isLoading && checklists.length > 0" class="loading-indicator small">Updating checklists...</div>
+</div>

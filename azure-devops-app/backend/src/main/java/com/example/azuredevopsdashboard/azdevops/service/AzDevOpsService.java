@@ -225,4 +225,62 @@ public class AzDevOpsService {
         logger.warn("No comments found or error occurred for work item ID {}.", workItemId);
         return Collections.emptyList();
     }
+
+    public List<WorkItemTimeAlertDto> getTimeReportAlerts(String projectOrTeamName, List<String> statesToCheck, int daysSinceLastChangeThreshold) {
+        String effectiveProjectName = StringUtils.hasText(projectOrTeamName) ? projectOrTeamName : getDefaultProjectNameFromConfig();
+        if (!StringUtils.hasText(effectiveProjectName)) {
+            logger.error("Project or team name is required for time report alerts and could not be derived.");
+            return Collections.emptyList();
+        }
+
+        if (statesToCheck == null || statesToCheck.isEmpty()) {
+            logger.warn("No states provided to check for time report alerts for project/team '{}'. Defaulting to 'Active'.", effectiveProjectName);
+            statesToCheck = Collections.singletonList("Active");
+        }
+
+        String statesInQuery = statesToCheck.stream()
+                                        .map(s -> "'" + s.replace("'", "''") + "'") // Escape single quotes
+                                        .collect(java.util.stream.Collectors.joining(", "));
+
+        // Note: WIQL @project refers to the project context of the API call, not a variable to be replaced here.
+        // The effectiveProjectName is used in the service call to queryWorkItems which sets the project context for the API.
+        String wiqlCriteria = String.format(
+            "SELECT [System.Id], [System.Title], [System.WorkItemType], [System.AssignedTo], [System.State], [System.ChangedDate], [Microsoft.VSTS.Scheduling.CompletedWork] " +
+            "FROM workitems " +
+            "WHERE [System.State] IN (%s) " +
+            "AND ([Microsoft.VSTS.Scheduling.CompletedWork] = null OR [Microsoft.VSTS.Scheduling.CompletedWork] = 0) " +
+            "ORDER BY [System.ChangedDate] DESC",
+            statesInQuery
+        );
+
+        // The daysSinceLastChangeThreshold logic is not yet incorporated into this WIQL.
+        // It would require adding another condition like: AND [System.ChangedDate] < @today-%d
+        // This is complex due to WIQL date functions and timezones.
+        // For now, the primary alert is based on 'CompletedWork = 0 OR null' in active states.
+
+        logger.info("Fetching work items for time report alerts for project/team '{}' using states: [{}]. WIQL: {}", effectiveProjectName, statesInQuery, wiqlCriteria);
+        List<AzDevOpsWorkItemDto> workItems = getWorkItemsByWiql(effectiveProjectName, wiqlCriteria, "Fields"); // Reuses existing method
+
+        return workItems.stream()
+            .map(wi -> {
+                String alertMsg = String.format(
+                    "Work item %d ('%s') is in state '%s' with no (or zero) completed work reported.",
+                    wi.getId(),
+                    wi.getFields().getTitle(), // Assuming getTitle() exists and maps to "System.Title"
+                    wi.getFields().getState()  // Assuming getState() exists and maps to "System.State"
+                );
+                return new WorkItemTimeAlertDto(
+                    wi.getId(),
+                    wi.getFields().getTitle(),
+                    wi.getFields().getWorkItemType(),
+                    Optional.ofNullable(wi.getFields().getAssignedTo()).map(AzDevOpsUserReferenceDto::getDisplayName).orElse("Unassigned"),
+                    Optional.ofNullable(wi.getFields().getAssignedTo()).map(AzDevOpsUserReferenceDto::getUniqueName).orElse(null),
+                    wi.getFields().getState(),
+                    wi.getFields().getChangedDate(),
+                    wi.getFields().getCompletedWork(),
+                    alertMsg
+                );
+            })
+            .collect(java.util.stream.Collectors.toList());
+    }
 }

@@ -77,3 +77,64 @@ export interface UpdateWorkItemPayload {
   priority?: number | null;
   customFields?: { [key: string]: any }; // For adding/updating custom fields
 }
+
+export interface WorkItemTimeAlert {
+  workItemId: number;
+  title?: string;
+  workItemType?: string;
+  assignedToDisplayName?: string;
+  assignedToUniqueName?: string;
+  state?: string;
+  changedDate?: string; // Or Date, if transformed
+  completedWork?: number | null;
+  alertMessage?: string;
+}
+
+// --- Checklist Models ---
+
+export interface ChecklistItem {
+  id: number;
+  itemText: string;
+  isCompleted: boolean;
+  itemOrder: number;
+}
+
+export interface Checklist {
+  id: number;
+  name: string;
+  description?: string;
+  azureDevopsOrganization: string;
+  azureDevopsProjectName: string;
+  azureDevopsWorkItemId: number;
+  createdByUserId?: number;
+  createdByUsername?: string;
+  createdAt?: string; // Or Date
+  updatedAt?: string; // Or Date
+  items: ChecklistItem[];
+}
+
+export interface CreateChecklistItemPayload {
+  itemText: string;
+  isCompleted?: boolean; // Defaults to false on backend if not provided
+  itemOrder?: number;    // Defaults to 0 or next available on backend if not provided
+}
+
+export interface CreateChecklistPayload {
+  name: string;
+  description?: string;
+  azureDevopsOrganization: string;
+  azureDevopsProjectName: string;
+  azureDevopsWorkItemId: number;
+  items?: CreateChecklistItemPayload[]; // Optional: create items along with checklist
+}
+
+export interface UpdateChecklistInfoPayload { // For updating only checklist's own info
+    name: string;
+    description?: string;
+}
+
+export interface UpdateChecklistItemPayload {
+  itemText?: string;     // Optional: only include fields to be updated
+  isCompleted?: boolean; // Using boolean | undefined might be better if false is a valid value to set
+  itemOrder?: number;
+}
