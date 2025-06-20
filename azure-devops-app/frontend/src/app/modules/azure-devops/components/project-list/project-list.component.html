@@ -1,0 +1,33 @@
+<div class="project-list-container">
+  <h2>Azure DevOps Projects</h2>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Loading projects...</p>
+    <!-- You can add a spinner or more elaborate loading animation here -->
+  </div>
+
+  <div *ngIf="error" class="error-message alert alert-danger">
+    <p>{{ error }}</p>
+    <p>Please ensure your Azure DevOps PAT and Organization URL are correctly configured in the backend's <code>application.properties</code>.</p>
+  </div>
+
+  <div *ngIf="!isLoading && !error && projects.length > 0" class="projects-grid">
+    <div *ngFor="let project of projects" class="project-card">
+      <h3>{{ project.name }}</h3>
+      <p class="project-description" *ngIf="project.description">{{ project.description }}</p>
+      <div class="project-details">
+        <p><small><strong>ID:</strong> {{ project.id }}</small></p>
+        <p><small><strong>State:</strong> {{ project.state || 'N/A' }}</small></p>
+        <p><small><strong>Last Updated:</strong> {{ project.lastUpdateTime | date:'mediumDate' }} at {{ project.lastUpdateTime | date:'shortTime' }}</small></p>
+        <a *ngIf="project.url" [href]="project.url" target="_blank" rel="noopener noreferrer" class="project-link btn btn-sm btn-outline-secondary mr-2">View in AzDO</a>
+        <a [routerLink]="[project.id, 'workitems']" class="view-workitems-link project-link btn btn-sm btn-info mr-2">Work Items</a>
+        <a [routerLink]="[project.id, 'dashboard']" class="view-dashboard-link project-link btn btn-sm btn-success">Dashboard</a>
+        <!-- Assuming project.id is the correct identifier for projectIdOrName in the route -->
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !error && projects.length === 0" class="no-projects-message">
+    <p>No projects found. This could be because there are no projects in the Azure DevOps organization, or the configured PAT does not have access to any.</p>
+  </div>
+</div>

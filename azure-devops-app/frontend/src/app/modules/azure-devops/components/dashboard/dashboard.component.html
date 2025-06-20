@@ -1,0 +1,73 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h2 *ngIf="projectIdOrName">Dashboard for Project: {{ projectIdOrName }}</h2>
+    <h2 *ngIf="!projectIdOrName && !isLoading && !error">Project Dashboard <small>(No project selected)</small></h2>
+  </header>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Loading dashboard data...</p>
+    <!-- Consider adding a spinner component -->
+  </div>
+
+  <div *ngIf="error" class="error-message alert alert-danger">
+    <p>{{ error }}</p>
+  </div>
+
+  <div *ngIf="!isLoading && !error && projectIdOrName" class="dashboard-content">
+    <section class="metrics-summary card-deck mb-4">
+      <div class="card text-white bg-primary">
+        <div class="card-body">
+          <h5 class="card-title">Open Items</h5>
+          <p class="card-text display-4">{{ openWorkItems }}</p>
+        </div>
+      </div>
+      <div class="card text-white bg-success">
+        <div class="card-body">
+          <h5 class="card-title">Closed Items</h5>
+          <p class="card-text display-4">{{ closedWorkItems }}</p>
+        </div>
+      </div>
+      <div class="card text-dark bg-light">
+        <div class="card-body">
+          <h5 class="card-title">Completion</h5>
+          <p class="card-text display-4">{{ percentageCompleted | number:'1.0-1' }}%</p>
+           <div class="progress" style="height: 5px;"> <!-- Basic progress bar -->
+            <div class="progress-bar" role="progressbar" [style.width.%]="percentageCompleted" aria-valuenow="percentageCompleted" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="charts-grid">
+      <div class="chart-container card" *ngIf="workItems.length > 0">
+        <div class="card-header">Work Item Status</div>
+        <div class="card-body">
+          <canvas baseChart
+            [data]="workItemStatusPieChartData"
+            [type]="workItemStatusPieChartType"
+            [options]="workItemStatusPieChartOptions"
+            (chartHover)="chartHovered($event)"
+            (chartClick)="chartClicked($event)"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-container card" *ngIf="workItems.length > 0">
+        <div class="card-header">Hours Overview</div>
+        <div class="card-body">
+          <canvas baseChart
+            [data]="workItemHoursBarChartData"
+            [type]="workItemHoursBarChartType"
+            [options]="workItemHoursBarChartOptions"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <div *ngIf="!isLoading && !error && workItems.length === 0 && projectIdOrName" class="no-data-message alert alert-info">
+      <p>No work items found for project '{{projectIdOrName}}' to display dashboard metrics.</p>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !error && !projectIdOrName" class="no-project-selected alert alert-warning">
+    <p>Please select a project to view its dashboard.</p>
+  </div>
+</div>

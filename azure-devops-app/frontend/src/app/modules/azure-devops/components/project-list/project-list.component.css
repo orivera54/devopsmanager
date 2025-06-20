@@ -1,0 +1,91 @@
+/* project-list.component.css */
+.project-list-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.loading-indicator, .no-projects-message {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2em;
+  color: #555;
+}
+
+.error-message {
+  color: #D8000C; /* Red for errors */
+  background-color: #FFD2D2; /* Light red background */
+  border: 1px solid #D8000C;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+  gap: 20px;
+}
+
+.project-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.project-card h3 {
+  margin-top: 0;
+  color: #005a9e; /* A blue tone often associated with Azure */
+  font-size: 1.4em;
+}
+
+.project-description {
+  font-size: 0.9em;
+  color: #333;
+  min-height: 40px; /* Ensure some space even if description is short */
+  margin-bottom: 10px;
+}
+
+.project-details p {
+  margin: 5px 0;
+  font-size: 0.85em;
+  color: #444;
+}
+
+.project-details p small strong {
+  color: #111;
+}
+
+.project-link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #0078d4;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.project-link:hover {
+  background-color: #005a9e;
+}
+
+.alert.alert-danger { /* Ensure Bootstrap-like alert styles if used */
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    position: relative;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+}
